@@ -28,6 +28,7 @@ class HostState(object):
         self.lock = threading.Lock()
         self.ip_mac_dict = {}  # IP -> MAC
         self.pending_dhcp_dict = {}  # device_id -> hostname
+        self.dhcp_dict = {}
         self.pending_resolver_dict = {}  # device_id -> resolver_ip
         self.pending_dns_dict = {}  # (device_id, domain) -> ip_set
         self.pending_flow_dict = {}  # flow_key -> flow_stats

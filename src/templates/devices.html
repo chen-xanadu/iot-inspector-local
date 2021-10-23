@@ -1,0 +1,145 @@
+<html lang="en">
+<head>
+    <title>Local Device List</title>
+    <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='button.css') }}" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200;300&display=swap');
+      /* Remove the navbar's default margin-bottom and rounded borders */
+      .navbar {
+        margin-bottom: 0;
+        border-radius: 0;
+      }
+
+      /* Add a gray background color and some padding to the footer */
+      footer {
+        background-color: #e3e0cf;
+        padding: 25px;
+      }
+      body {
+        font-family: 'Nunito Sans', sans-serif;
+        font-size: 17px;
+      }
+    </style>
+
+</head>
+<body>
+
+
+<div class="tasks">
+  <!-- title -->
+  <h1>Local Device List</h1>
+
+
+  {% for item in devices %}
+    <input id={{item["device_id"]}} type='checkbox' {% if item["is_inspected"] %} checked {% endif %}/>
+    <label for={{item["device_id"]}}>
+      <h2>{{item["dhcp_name"]}}
+        <span>IP: {{item["device_ip"]}}</span>
+        <span>MAC: {{item["device_mac"]}}</span>
+      </h2>
+    </label>
+  {% endfor %}
+
+<!--  &lt;!&ndash; task 1 &ndash;&gt;-->
+<!--  <input id='label-1' type='checkbox' checked/>-->
+<!--  <label for='label-1'>-->
+<!--    <h2>D1-->
+<!--      <span>IP: </span>-->
+<!--      <span>MAC: </span>-->
+<!--    </h2>-->
+<!--  </label>-->
+<!--  &lt;!&ndash; task 2 &ndash;&gt;-->
+<!--  <input id='label-2' type='checkbox' checked/>-->
+<!--  <label for='label-2'>-->
+<!--    <h2>D2-->
+<!--      <span>art&amp;&amp;code, personal</span>-->
+<!--    </h2>-->
+<!--  </label>-->
+<!--  &lt;!&ndash; task 3 &ndash;&gt;-->
+<!--  <input id='label-3' type='checkbox'/>-->
+<!--  <label for='label-3'>-->
+<!--    <h2>D3-->
+<!--      <span>out fsdfs my mind</span>-->
+<!--    </h2>-->
+<!--  </label>-->
+<!--  &lt;!&ndash; task 4 &ndash;&gt;-->
+<!--  <input id='label-4' type='checkbox'/>-->
+<!--  <label for='label-4'>-->
+<!--    <h2>D4-->
+<!--      <span>hit f12 &amp; let's get wasted</span>-->
+<!--    </h2>-->
+<!--  </label>-->
+<!--  &lt;!&ndash; task 5 &ndash;&gt;-->
+<!--  <input id='label-5' type='checkbox'/>-->
+<!--  <label for='label-5'>-->
+<!--    <h2>D1-->
+<!--      <span>!!</span>-->
+<!--    </h2>-->
+<!--  </label>-->
+<!--  &lt;!&ndash; task 6 &ndash;&gt;-->
+<!--  <input id='label-6' type='checkbox'/>-->
+<!--  <label for='label-6'>-->
+<!--    <h2>D1-->
+<!--      <span>!!</span>-->
+<!--    </h2>-->
+<!--  </label>-->
+<button class="button">
+  <span class="submit" id="save">Save</span>
+  <span class="loading"><i class="fa fa-refresh"></i></span>
+  <span class="check"><i class="fa fa-check"></i></span>
+</button>
+
+</div>
+
+
+
+
+<script>
+
+  const button = document.querySelector('.button');
+  const submit = document.querySelector('.submit');
+
+  function toggleClass() {
+      this.classList.toggle('active');
+  }
+
+  function addClass() {
+      this.classList.add('finished');
+  }
+
+  button.addEventListener('click', toggleClass);
+  button.addEventListener('transitionend', toggleClass);
+  button.addEventListener('transitionend', addClass);
+
+  let devices = document.getElementsByTagName('input')
+  for (let device of devices) {
+    device.onchange = function () {
+      button.classList.remove('finished')
+    }
+  }
+
+  document.getElementById("save").onclick = function () {
+
+    let base_url = "http://localhost:{{PORT}}"
+
+    let devices = document.getElementsByTagName('input')
+    console.log('test')
+    for (let device of devices) {
+      console.log(device)
+      if (device.checked) {
+        let url = `/enable_inspection/${device.id}`
+        fetch(url, {method: 'GET'})
+      } else {
+        let url = `/disable_inspection/${device.id}`
+        fetch(url, {method: 'GET'})
+      }
+      
+    }
+
+  }
+</script>
+
+</body>
+</html>

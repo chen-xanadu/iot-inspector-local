@@ -1,6 +1,7 @@
-from flask import Flask, g
+from flask import Flask, g, url_for, render_template
 import threading
 
+from pathlib import Path
 import flask
 import utils
 import time
@@ -10,6 +11,8 @@ import device_identification
 
 
 PORT = 46241
+DEVICE_DIR = Path('/home/pi/devices')
+
 
 GLOBAL_CONTEXT = {'host_state': None}
 
@@ -54,7 +57,7 @@ def start_thread(host_state):
 
 def _monitor_web_server():
 
-    utils.restart_upon_crash(app.run, kwargs={'port': PORT})
+    utils.restart_upon_crash(app.run, kwargs={'port': PORT, 'host': '0.0.0.0'})
 
 
 def get_host_state():
@@ -177,6 +180,7 @@ def get_device_list_helper():
                 device_id,
                 {
                     'device_id': device_id,
+                    'device_mac': mac,
                     'device_ip': ip,
                     'device_name': device_identification.get_device_name(mac),
                     'device_vendor': device_identification.get_device_vendor(mac),
@@ -199,7 +203,7 @@ def get_device_list_helper():
     # Fill out dhcp_name
 
     with host_state.lock:
-        for (device_id, dhcp_name) in host_state.pending_dhcp_dict.items():
+        for (device_id, dhcp_name) in host_state.dhcp_dict.items():
             if device_id in output_dict:
                 output_dict[device_id]['dhcp_name'] = dhcp_name
 
@@ -308,6 +312,11 @@ def disable_inspection(device_id):
                 host_state.device_whitelist.remove(device_id)
             except ValueError:
                 pass
+    
+    device_file = DEVICE_DIR / (device_id + '.json')
+    device_attr = json.loads(device_file.read_text())
+    device_attr['is_monitored'] = False
+    device_file.write_text(json.dumps(device_attr))
 
     return OK_JSON
 
@@ -335,6 +344,11 @@ def enable_inspection(device_id):
         with host_state.lock:
             if device_id not in host_state.device_whitelist:
                 host_state.device_whitelist.append(device_id)
+    
+    device_file = DEVICE_DIR / (device_id + '.json')
+    device_attr = json.loads(device_file.read_text())
+    device_attr['is_monitored'] = True
+    device_file.write_text(json.dumps(device_attr))
 
     return OK_JSON
 
@@ -373,3 +387,9 @@ def list_blocked_devices():
             blocked_device_list = list(host_state.block_device_dict.keys())
 
     return json.dumps(blocked_device_list)
+
+
+@app.route('/monitor_ui', methods=['GET'])
+def monitor_ui():
+    devices = get_device_list_helper().values()
+    return render_template('devices.html', devices=devices, PORT=PORT)

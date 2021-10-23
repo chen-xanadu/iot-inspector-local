@@ -140,6 +140,7 @@ class PacketProcessor(object):
                 device_id = utils.get_device_id(device_mac, self._host_state)
 
                 self._host_state.pending_dhcp_dict[device_id] = device_hostname
+                self._host_state.dhcp_dict[device_id] = device_hostname
                 utils.log('[UPLOAD] DHCP Hostname:', device_hostname)
 
             if resolver_ip:

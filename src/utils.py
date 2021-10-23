@@ -174,6 +174,7 @@ def get_network_ip_range():
         iface_str = iface_info.guid
     else:
         iface_str = sc.conf.iface
+    iface_str = str(iface_str)
 
     netmask = None
     for k, v in netifaces.ifaddresses(iface_str).items():
