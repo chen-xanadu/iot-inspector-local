@@ -98,6 +98,8 @@
 
 <script>
 
+
+
   const button = document.querySelector('.button');
   const submit = document.querySelector('.submit');
 
@@ -120,11 +122,11 @@
     }
   }
 
+
   document.getElementById("save").onclick = function () {
 
     let base_url = "http://localhost:{{PORT}}"
 
-    let devices = document.getElementsByTagName('input')
     console.log('test')
     for (let device of devices) {
       console.log(device)
@@ -137,8 +139,8 @@
       }
       
     }
-
   }
+
 </script>
 
 </body>
