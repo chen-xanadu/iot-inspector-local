@@ -1,6 +1,7 @@
 from flask import Flask, g, url_for, render_template
 import threading
 
+from datetime import datetime 
 from pathlib import Path
 import flask
 import utils
@@ -183,7 +184,7 @@ def get_device_list_helper():
                     'device_mac': mac,
                     'device_ip': ip,
                     'device_name': device_identification.get_device_name(mac),
-                    'device_vendor': device_identification.get_device_vendor(mac),
+                    'device_vendor': get_mac_vendor(mac),
                     'netdisco_name': '',
                     'dhcp_name': '',
                     'is_inspected': device_id in host_state.device_whitelist
@@ -316,6 +317,7 @@ def disable_inspection(device_id):
     device_file = DEVICE_DIR / (device_id + '.json')
     device_attr = json.loads(device_file.read_text())
     device_attr['is_monitored'] = False
+    device_attr['last_monitor_timestamp'] = str(datetime.utcnow())
     device_file.write_text(json.dumps(device_attr))
 
     return OK_JSON
@@ -348,6 +350,7 @@ def enable_inspection(device_id):
     device_file = DEVICE_DIR / (device_id + '.json')
     device_attr = json.loads(device_file.read_text())
     device_attr['is_monitored'] = True
+    device_attr['last_monitor_timestamp'] = str(datetime.utcnow())
     device_file.write_text(json.dumps(device_attr))
 
     return OK_JSON
@@ -393,3 +396,13 @@ def list_blocked_devices():
 def monitor_ui():
     devices = get_device_list_helper().values()
     return render_template('devices.html', devices=devices, PORT=PORT)
+
+
+def get_mac_vendor(mac):
+    mac = mac.replace(':', '')[:6]
+    p = subprocess.run(f"grep -i '{mac}' /usr/share/nmap/nmap-mac-prefixes", shell=True, capture_output=True, text=True)
+
+    if p.stdout == '':
+        return 'Unknown'
+    else:
+        return p.stdout.strip()[7:]

@@ -36,8 +36,8 @@
     <input id={{item["device_id"]}} type='checkbox' {% if item["is_inspected"] %} checked {% endif %}/>
     <label for={{item["device_id"]}}>
       <h2>{{item["dhcp_name"]}}
-        <span>IP: {{item["device_ip"]}}</span>
-        <span>MAC: {{item["device_mac"]}}</span>
+        <span><b>Vendor:</b> {{item["device_vendor"]}}</span>
+        <span><b>IP:</b> {{item["device_ip"]}}, <b>MAC:</b> {{item["device_mac"]}}</span>
       </h2>
     </label>
   {% endfor %}
