@@ -7,6 +7,7 @@ import flask
 import utils
 import time
 import json
+import subprocess
 import host_blocklist
 import device_identification
 
@@ -98,7 +99,9 @@ def show_devices():
         if device_id in black_list:
             black_list_status = '<i>(Currently blocked by Weijia)</i>'
 
-        item = f'<li>{vendor} {name} {black_list_status} <small>[<a href="/weijia_enable_inspection/{device_id}">Allow Inspection</a> | <a href="/weijia_disable_inspection/{device_id}">Block Inspection</a>]</small></li>\n'
+        item = '<li>{} {} {} <small>[<a href="/weijia_enable_inspection/{}">Allow Inspection</a> | <a href="/weijia_disable_inspection/{}">Block Inspection</a>]</small></li>\n'.format(
+            vendor, name, black_list_status, device_id, device_id
+        )
 
         if device_dict['is_inspected']:
             inspected_text += item
@@ -400,9 +403,9 @@ def monitor_ui():
 
 def get_mac_vendor(mac):
     mac = mac.replace(':', '')[:6]
-    p = subprocess.run(f"grep -i '{mac}' /usr/share/nmap/nmap-mac-prefixes", shell=True, capture_output=True, text=True)
+    p = subprocess.run("grep -i '{}' /usr/share/nmap/nmap-mac-prefixes".format(mac), shell=True, stdout=subprocess.PIPE)
 
-    if p.stdout == '':
+    if p.stdout.encode() == '':
         return 'Unknown'
     else:
         return p.stdout.strip()[7:]
