@@ -405,7 +405,7 @@ def get_mac_vendor(mac):
     mac = mac.replace(':', '')[:6]
     p = subprocess.run("grep -i '{}' /usr/share/nmap/nmap-mac-prefixes".format(mac), shell=True, stdout=subprocess.PIPE)
 
-    if p.stdout.encode() == '':
+    if p.stdout.decode() == '':
         return 'Unknown'
     else:
         return p.stdout.strip()[7:]
