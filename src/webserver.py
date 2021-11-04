@@ -408,4 +408,4 @@ def get_mac_vendor(mac):
     if p.stdout.decode() == '':
         return 'Unknown'
     else:
-        return p.stdout.strip()[7:]
+        return p.stdout.decode().strip()[7:]
