@@ -13,7 +13,7 @@ import device_identification
 
 
 PORT = 46241
-DEVICE_DIR = Path('/home/pi/devices')
+# DEVICE_DIR = Path('/home/pi/devices')
 
 
 GLOBAL_CONTEXT = {'host_state': None}
@@ -317,11 +317,11 @@ def disable_inspection(device_id):
             except ValueError:
                 pass
     
-    device_file = DEVICE_DIR / (device_id + '.json')
-    device_attr = json.loads(device_file.read_text())
-    device_attr['is_monitored'] = False
-    device_attr['last_monitor_timestamp'] = str(datetime.utcnow())
-    device_file.write_text(json.dumps(device_attr))
+#     device_file = DEVICE_DIR / (device_id + '.json')
+#     device_attr = json.loads(device_file.read_text())
+#     device_attr['is_monitored'] = False
+#     device_attr['last_monitor_timestamp'] = str(datetime.utcnow())
+#     device_file.write_text(json.dumps(device_attr))
 
     return OK_JSON
 
@@ -350,11 +350,11 @@ def enable_inspection(device_id):
             if device_id not in host_state.device_whitelist:
                 host_state.device_whitelist.append(device_id)
     
-    device_file = DEVICE_DIR / (device_id + '.json')
-    device_attr = json.loads(device_file.read_text())
-    device_attr['is_monitored'] = True
-    device_attr['last_monitor_timestamp'] = str(datetime.utcnow())
-    device_file.write_text(json.dumps(device_attr))
+#     device_file = DEVICE_DIR / (device_id + '.json')
+#     device_attr = json.loads(device_file.read_text())
+#     device_attr['is_monitored'] = True
+#     device_attr['last_monitor_timestamp'] = str(datetime.utcnow())
+#     device_file.write_text(json.dumps(device_attr))
 
     return OK_JSON
 
